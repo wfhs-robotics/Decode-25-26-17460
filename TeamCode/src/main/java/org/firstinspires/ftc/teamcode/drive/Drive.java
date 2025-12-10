@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -30,7 +31,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import android.graphics.Color;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.acmerobotics.dashboard.config.Config;
+
 
 
 /*
@@ -61,7 +62,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 @TeleOp(name="Drive", group="Iterative OpMode")
 @Config
-//@Disabled
+
 public class Drive extends OpMode
 {
     // Declare OpMode members.
@@ -70,7 +71,7 @@ public class Drive extends OpMode
 
     private  DcMotor launchLeft = null;
     private  DcMotor launchRight = null;
-    private  DcMotorEx revolver = null;
+    private  Servo revolver = null;
     private  DcMotor intake = null;
     private Servo wrist = null;
     private Servo intakeArm=null;
@@ -81,22 +82,17 @@ public class Drive extends OpMode
     boolean prevB = false;
     boolean noprevB= false;
     boolean prevRightStick =false;
-    boolean noPrevRightStick =false;
     //revolver variables
-    public static int Pos1=100;
-    boolean prevLBumper=false;
-    boolean prevRBumper=false;
+    public static double Pos1=0;
 
-    public static int Pos2=230;
-    public static int Pos3=350;
-    public static int Alt1 = 40;
-    public static int Alt2 = 170;
-    public static int Alt3 = 280;
-    public  static int V =1500;
+    public static double Pos2=0.1;
+    public static double Pos3=0.2;
+    public static double Alt1 = 0.3;
+    public static double Alt2 = 0.4;
+    public static double Alt3 = 0.5;
     public  static double wP1 = .9;
     public  static double wP2 = .45;
     public  static double Wee = .8;
-    public  static double P = .5;
 
     int posIndex = 0;
     int modeIndex = 0;
@@ -104,10 +100,6 @@ public class Drive extends OpMode
     boolean prevLB = false;
     boolean prevRB = false;
     double posMath =0;
-    boolean homed = false;
-    boolean moveing = false;
-    double tolerance=6.0;
-
     double TPR = 384.5; //Ticks per rot
 
 
@@ -132,26 +124,10 @@ public class Drive extends OpMode
         launchLeft = hardwareMap.get(DcMotor.class, "launchleft");
         launchRight = hardwareMap.get(DcMotor.class, "launchright");
         intake = hardwareMap.get(DcMotor.class, "intake");
-        revolver =hardwareMap.get(DcMotorEx.class, "revolver");
+        revolver =hardwareMap.get(Servo.class, "revolver");
         wrist =hardwareMap.get(Servo.class, "wrist");
         intakeArm =hardwareMap.get(Servo.class, "intakeArm");
         color = hardwareMap.get(RevColorSensorV3.class, "color");
-        // If possible, turn the light on in the beginning (it might already be on anyway,
-        // we just make sure it is if we can).
-
-        revolver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-
-
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-//        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-//        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-//        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-//        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -184,22 +160,6 @@ public class Drive extends OpMode
         double RT;
         double shoot;
         double Intake;
-        double scale = 2.0;
-        int g = (int) (color.green() * scale);
-        int r = (int) (color.red() * scale);
-        int b = (int) (color.blue() * scale);
-        int a = color.alpha();
-
-
-
-
-        int revolverPos = revolver.getCurrentPosition();
-        // convert TPR to degrees
-        double revolverCurentPos = revolverPos % TPR;
-        if (revolverCurentPos < 0) revolverCurentPos += TPR; //fixes negative values
-
-        //convert to angle
-        double angle = (revolverCurentPos / TPR) * 360.0;
 
 
         // POV Mode uses left stick to go forward, and right stick to turn.
@@ -229,18 +189,9 @@ public class Drive extends OpMode
             Intake = -1;
         else
             Intake = 0;
-        //revolver colorSensor logic
 
         //revolver
-
-
-
-
-        revolver.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // revolver pos selection
-        revolver.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // ========= A BUTTON TOGGLES MODES =========
+        // ========= Right Stick Button BUTTON TOGGLES MODES =========
         if (gamepad2.right_stick_button && !prevRightStick) {
             modeIndex = 1 - modeIndex;   // toggles 0 ↔ 1
             posIndex = 0;                // resets to first position
@@ -265,7 +216,7 @@ public class Drive extends OpMode
 
 
 // ========= SELECT TARGET POSITION BASED ON MODE =========
-        int target = 0;
+        double target = 0;
 
         if (modeIndex == 0) {
             // original 3 positions
@@ -280,14 +231,9 @@ public class Drive extends OpMode
         }
 
 // ========= APPLY MOVEMENT =========
-        revolver.setTargetPosition(target);
-        revolver.setPower(P);
-        revolver.setVelocity(V);
+        revolver.setPosition(target);
 
-// stop when close
-        if (Math.abs(revolver.getCurrentPosition() - target) < 8) {
-            revolver.setPower(0);
-        }
+
 
 
         if (gamepad2.x)
@@ -326,9 +272,8 @@ public class Drive extends OpMode
         // Get the normalized colors from the sensor
         NormalizedRGBA colors = color.getNormalizedColors();
 
-
-        //show pos of revolver on Driver Hub
-        telemetry.addData("revolverPos", angle);
+        telemetry.addData("target", target);
+        telemetry.addData("revolverPos", revolver.getPosition());
         //show wrist pos
         telemetry.addData("wristPos", wrist.getPosition());
         // Show the elapsed game time and wheel power.
