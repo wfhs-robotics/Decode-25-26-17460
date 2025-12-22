@@ -83,15 +83,14 @@ public class Drive extends OpMode
     boolean noprevB= false;
     boolean prevRightStick =false;
     //revolver variables
-    public static double Pos1=0;
-
-    public static double Pos2=0.1;
-    public static double Pos3=0.2;
-    public static double Alt1 = 0.3;
-    public static double Alt2 = 0.4;
-    public static double Alt3 = 0.5;
-    public  static double wP1 = .9;
-    public  static double wP2 = .45;
+    public static double Pos1=0.22;
+    public static double Pos2=0.163;
+    public static double Pos3=0.09;
+    public static double Alt1 = 0.057;
+    public static double Alt2 = 0.2;
+    public static double Alt3 = 0.13;
+    public  static double wP1 = .022;
+    public  static double wP2 = .163;
     public  static double Wee = .8;
 
     int posIndex = 0;
