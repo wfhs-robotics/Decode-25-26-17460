@@ -31,6 +31,9 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import android.graphics.Color;
+
+import androidx.xr.runtime.math.Pose;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -83,12 +86,12 @@ public class Drive extends OpMode
     boolean noprevB= false;
     boolean prevRightStick =false;
     //revolver variables
-    public static double Pos1=0.22;
-    public static double Pos2=0.163;
-    public static double Pos3=0.09;
-    public static double Alt1 = 0.057;
-    public static double Alt2 = 0.2;
-    public static double Alt3 = 0.13;
+    public static double Pos1=0.55;
+    public static double Pos2=0.13;
+    public static double Pos3=0.199;
+    public static double Alt1 = 0.315;
+    public static double Alt2 = 0.47;
+    public static double Alt3 = 0.387;
     public  static double wP1 = .022;
     public  static double wP2 = .163;
     public  static double Wee = .8;

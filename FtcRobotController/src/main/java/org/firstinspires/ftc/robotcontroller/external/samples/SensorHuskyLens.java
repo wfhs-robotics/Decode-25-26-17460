@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
+import java.lang.reflect.Array;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -139,7 +140,28 @@ public class SensorHuskyLens extends LinearOpMode {
              *
              * Returns an empty array if no objects are seen.
              */
+            TestHuskLensStorage.blocks == huskyLens.blocks();
+            String[] order;
             HuskyLens.Block[] blocks = huskyLens.blocks();
+            int aprilTags = blocks[0].id;
+            if(gamepad1.a) {
+                if (blocks.length == 1) {
+                    if (blocks[0].id == 1) {
+                        //code
+                        order = new String[]{"Green", "Purple", "Purple"};
+                    } else if(blocks[0].id == 2) {
+                        //code
+                    } else if(blocks[0].id == 3) {
+                        //code
+                    } else {
+                        telemetry.addData(">", "April Tag value not 1, 2, or 3");
+                    }
+                } else {
+                    telemetry.addData(">", "I SEE TWO TAGS WHAT DO I DO");
+                }
+            }
+
+
             telemetry.addData("Block count", blocks.length);
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
