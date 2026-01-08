@@ -46,6 +46,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.acmerobotics.dashboard.config.Config;
+import org.firstinspires.ftc.teamcode.Misc.Hardware;
 
 
 
@@ -71,14 +72,9 @@ public class Drive extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private SampleMecanumDrive drive;
+    Hardware robot  = new Hardware();
 
-    private  DcMotor launchLeft = null;
-    private  DcMotor launchRight = null;
-    private  Servo revolver = null;
-    private  DcMotor intake = null;
-    private Servo wrist = null;
-    private Servo intakeArm=null;
-    private RevColorSensorV3 color;
+
     boolean prevA = false;
     boolean prevY = false;
     boolean prevX = false;
@@ -86,15 +82,17 @@ public class Drive extends OpMode
     boolean noprevB= false;
     boolean prevRightStick =false;
     //revolver variables
-    public static double Pos1=0.55;
-    public static double Pos2=0.13;
-    public static double Pos3=0.199;
-    public static double Alt1 = 0.315;
-    public static double Alt2 = 0.47;
-    public static double Alt3 = 0.387;
-    public  static double wP1 = .022;
-    public  static double wP2 = .163;
+    public static double Pos1=0.055;
+    public static double Pos2=0.2;
+    public static double Pos3=0.13;
+    public static double Alt1 = 0.311;
+    public static double Alt2 = 0.16;
+    public static double Alt3 = 0.235;
+    public  static double wP1 = 1;
+    public  static double wP2 = .54;
     public  static double Wee = .8;
+    public  static double aP1=.51;
+    public  static double aP2 =.16;
 
     int posIndex = 0;
     int modeIndex = 0;
@@ -123,13 +121,7 @@ public class Drive extends OpMode
         // step (using the FTC Robot Controller app on the phone).
         drive = new SampleMecanumDrive(hardwareMap);
 
-        launchLeft = hardwareMap.get(DcMotor.class, "launchleft");
-        launchRight = hardwareMap.get(DcMotor.class, "launchright");
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        revolver =hardwareMap.get(Servo.class, "revolver");
-        wrist =hardwareMap.get(Servo.class, "wrist");
-        intakeArm =hardwareMap.get(Servo.class, "intakeArm");
-        color = hardwareMap.get(RevColorSensorV3.class, "color");
+
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -233,15 +225,15 @@ public class Drive extends OpMode
         }
 
 // ========= APPLY MOVEMENT =========
-        revolver.setPosition(target);
+        robot.revolver.setPosition(target);
 
 
 
 
         if (gamepad2.x)
-            intakeArm.setPosition(.4);
+            robot.intakeArm.setPosition(aP1);
         else
-            intakeArm.setPosition(.05);
+            robot.intakeArm.setPosition(aP2);
 
 
         //toggle logic
@@ -253,9 +245,9 @@ public class Drive extends OpMode
 
         //launch angle
         if (noprevB) {
-            wrist.setPosition(wP1);
+            robot.wrist.setPosition(wP1);
         } else
-            wrist.setPosition(wP2);
+            robot.wrist.setPosition(wP2);
 
         //toggle buttons
         prevY = gamepad2.y;
@@ -265,19 +257,19 @@ public class Drive extends OpMode
         // Send calculated power to wheels
 
         //send power to other motors
-        launchLeft.setPower(shoot);
-        launchRight.setPower(-shoot);
-        intake.setPower(Intake);
+        robot.launchLeft.setPower(shoot);
+        robot.launchRight.setPower(-shoot);
+        robot.intake.setPower(Intake);
 
 
         //detect color
         // Get the normalized colors from the sensor
-        NormalizedRGBA colors = color.getNormalizedColors();
+        NormalizedRGBA colors = robot.color.getNormalizedColors();
 
         telemetry.addData("target", target);
-        telemetry.addData("revolverPos", revolver.getPosition());
+        telemetry.addData("revolverPos", robot.revolver.getPosition());
         //show wrist pos
-        telemetry.addData("wristPos", wrist.getPosition());
+        telemetry.addData("wristPos", robot.wrist.getPosition());
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("posMath", posMath);

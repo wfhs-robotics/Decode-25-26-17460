@@ -140,7 +140,7 @@ public class SensorHuskyLens extends LinearOpMode {
              *
              * Returns an empty array if no objects are seen.
              */
-            TestHuskLensStorage.blocks == huskyLens.blocks();
+            //TestHuskLensStorage.blocks == huskyLens.blocks();
             String[] order;
             HuskyLens.Block[] blocks = huskyLens.blocks();
             int aprilTags = blocks[0].id;
